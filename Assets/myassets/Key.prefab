@@ -121,6 +121,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   normalScale: 0.03
-  highScale: 0.5
+  highScale: 0.1
   code: 0
   restPosition: {x: 0, y: 0, z: 0}
