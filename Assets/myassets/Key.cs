@@ -5,27 +5,56 @@ using UnityEngine;
 public class Key : MonoBehaviour {
 
     public float normalScale;
-    float highScale = .2F;
-    public KeyCode code;
+    float movescale = .01f;
+    float bumpscale = .04f*25.0f;
 
-    Vector2 rest;
+    public KeyCode code;
     Transform tr;
-    Rigidbody rb;
+    Renderer rend;
+
+    Color colorStart = Color.green;
+    Color colorEnd;
+    float timeStart = -9999.0f;
+    float duration = 1.5f;
+    float lerp;
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        rend = GetComponent<Renderer>();
         tr = GetComponent<Transform>();
+        colorEnd = rend.material.color;
     }
 
     void Update () {
+        bool keydown = Input.GetKeyDown(code);
+        bool keyup = Input.GetKeyUp(code);
+        Bump(keyup, keydown);
+        Colorshift(keyup, keydown);
+    }
 
-        if (Input.GetKeyDown(code))
+
+    void Colorshift(bool keyup, bool keydown) {
+        if (keydown)
         {
-            tr.position += (Vector3.up * highScale);
+            timeStart = Time.time;
         }
-        if (Input.GetKeyUp(code)) {
+
+ 
+        if ((lerp = Time.time - timeStart) <= duration) 
+            rend.material.color = Color.Lerp(colorStart, colorEnd, lerp / duration );
+    }
+
+    void Bump(bool keyup, bool keydown) {
+
+        if (keydown)
+        {
+            tr.localScale += (Vector3.up * bumpscale);
+            tr.position += (Vector3.up * movescale);
+        }
+        else if (keyup)
+        {
             //   tr.position = rest;
-            tr.position -= (Vector3.up * highScale);
+            tr.localScale -= (Vector3.up * bumpscale);
+            tr.position -= (Vector3.up * movescale);
         }
     }
 }
