@@ -18,6 +18,14 @@ public class Key : MonoBehaviour {
     float duration = 1.5f;
     float lerp;
 
+    public bool isClone = false;
+    public bool isBumpy = false;
+    public bool isSpruty = false;
+    public bool isMissile = false;
+
+    float cloneduration = 10.0f;
+    float gravityAmplifier = 2.5f;
+
     void Start()
     {
         rend = GetComponent<Renderer>();
@@ -26,12 +34,58 @@ public class Key : MonoBehaviour {
     }
 
     void Update () {
-        bool keydown = Input.GetKeyDown(code);
-        bool keyup = Input.GetKeyUp(code);
-        Bump(keyup, keydown);
-        Colorshift(keyup, keydown);
+        if (!isClone)
+        {
+            bool keydown = Input.GetKeyDown(code);
+            bool keyup = Input.GetKeyUp(code);
+            Colorshift(keyup, keydown);
+            if(isBumpy)Bump(keyup, keydown);
+            if (isSpruty) Sprut(keydown);
+            else if (isMissile) Launch(keydown);
+        }
     }
 
+    void Launch(bool keydown) { }
+
+
+    // @doc - https://www.alanzucconi.com/2015/09/16/how-to-sample-from-a-gaussian-distribution/ - 26.11.17
+    float GaussianRandom() {
+        const float standardDeviation = 0.25f;
+        const float MAX = standardDeviation * 3.5f;
+        const float MIN = standardDeviation * -3.5f;
+
+        float v1, v2, s;
+        float result;
+        do
+        {
+            do
+            {
+                v1 = 2.0f * Random.Range(0f, 1f) - 1.0f;
+                v2 = 2.0f * Random.Range(0f, 1f) - 1.0f;
+                s = v1 * v1 + v2 * v2;
+            } while (s >= 1.0f || s == 0f);
+
+            s = Mathf.Sqrt((-2.0f * Mathf.Log(s)) / s);
+            result = v1 * s * standardDeviation;
+        } while (result > MAX && result < MIN);
+        return result;
+    }
+
+
+    void Sprut(bool keydown) {
+
+        if (keydown) {
+            GameObject keyclone = Instantiate(gameObject, tr.parent);
+            keyclone.GetComponent<Rigidbody>().isKinematic = false;
+
+            keyclone.GetComponent<Key>().isClone = true;
+            keyclone.GetComponent<Rigidbody>().velocity = tr.TransformDirection(Vector3.up * gravityAmplifier);
+            keyclone.GetComponent<Rigidbody>().velocity += tr.TransformDirection(Vector3.forward * GaussianRandom());
+            keyclone.GetComponent<Rigidbody>().velocity += tr.TransformDirection(Vector3.right *GaussianRandom());
+            GameObject.Destroy(keyclone, cloneduration);
+            keyclone.GetComponent<Rigidbody>().useGravity = true;
+        }
+    }
 
     void Colorshift(bool keyup, bool keydown) {
         if (keydown)
