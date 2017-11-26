@@ -5,28 +5,27 @@ using UnityEngine;
 public class Key : MonoBehaviour {
 
     public float normalScale;
-    public float highScale;
+    float highScale = .2F;
     public KeyCode code;
 
-    public Vector3 restPosition;
+    Vector2 rest;
     Transform tr;
-
+    Rigidbody rb;
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         tr = GetComponent<Transform>();
-        restPosition = tr.position;
     }
 
     void Update () {
 
         if (Input.GetKeyDown(code))
         {
-            tr.localScale = new Vector3(tr.localScale.x, highScale, tr.localScale.z);
-            tr.position = restPosition + new Vector3(0.0f, tr.lossyScale.y / 2, 0.0f);
+            tr.position += (Vector3.up * highScale);
         }
         if (Input.GetKeyUp(code)) {
-            tr.localScale = new Vector3(tr.localScale.x, normalScale, tr.localScale.z);
-            tr.position = restPosition + new Vector3(0.0f, tr.lossyScale.y / 2, 0.0f);
+            //   tr.position = rest;
+            tr.position -= (Vector3.up * highScale);
         }
     }
 }
