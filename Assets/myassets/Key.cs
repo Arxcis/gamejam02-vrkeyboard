@@ -17,6 +17,7 @@ public class Key : MonoBehaviour {
     float timeStart = -9999.0f;
     float duration = 1.5f;
     float lerp;
+
     void Start()
     {
         rend = GetComponent<Renderer>();
@@ -38,7 +39,6 @@ public class Key : MonoBehaviour {
             timeStart = Time.time;
         }
 
- 
         if ((lerp = Time.time - timeStart) <= duration) 
             rend.material.color = Color.Lerp(colorStart, colorEnd, lerp / duration );
     }
